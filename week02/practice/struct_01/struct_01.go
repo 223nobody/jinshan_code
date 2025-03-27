@@ -15,12 +15,19 @@ func main() {
 	p := NewPerson("付坤", 20, "2141024586@qq.com")
 	p.PrintPerson()
 
-	jsonData, err := json.MarshalIndent(p, "", "  ")
+	jsonData, err := json.Marshal(p)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Println(string(jsonData))
+	fmt.Println("\n" + string(jsonData))
+
+	jsonData1, err := json.MarshalIndent(p, "", "  ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println("\n" + string(jsonData1))
 }
 
 func NewPerson(name string, age int, email string) Person {
