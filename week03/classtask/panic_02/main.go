@@ -14,7 +14,6 @@ func main() {
 		}
 	}()
 	fmt.Printf("索引位置为 %d 处的数组元素是 %d \n", n, accessArray(n, num))
-
 }
 
 func accessArray(n int, arr []int) int {
