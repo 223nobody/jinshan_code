@@ -3,11 +3,9 @@
 import "fmt"
 
 func Swap(a, b *int) {
-	p := 0
-	q := &p
-	*q = *a
+	q := *a
 	*a = *b
-	*b = *q
+	*b = q
 }
 
 func main() {
