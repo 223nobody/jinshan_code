@@ -13,7 +13,7 @@ type Student struct {
 }
 
 func saveStudents(filename string, students []Student) {
-	// 使用os.Create会清空原有内容
+
 	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Println("无法创建文件:", err)
@@ -21,7 +21,6 @@ func saveStudents(filename string, students []Student) {
 	}
 	defer file.Close()
 
-	// 使用JSON编码器
 	encoder := json.NewEncoder(file)
 	if err := encoder.Encode(students); err != nil {
 		fmt.Println("保存数据失败:", err)
