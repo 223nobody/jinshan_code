@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>个人名片</title>
     <style>
         /* 名片容器样式 */
         .business-card {
@@ -22,39 +21,48 @@
             border-radius: 50%;
             border: 3px solid #4CAF50;
             margin-bottom: 10px;
-            margin-left: 10px;
             object-fit: cover;
         }
-
-        /* 标题样式 */
         h1 {
             color: #2c3e50;
             font-size: 28px;
             margin-bottom: 10px;
             margin-left: 10px;
+            text-align: center;
         }
 
-        /* 专业方向样式 */
+        /* 个人信息样式 */
         .specialization {
             color: #4CAF50;
-            font-size: 20px;
+            font-size: 25px;
             font-weight: bold;
             margin-bottom: 15px;
             margin-left: 10px;
         }
 
+        .lianxi {
+            color: #00F5FF;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
         /* 联系方式容器 */
         .contact-info {
             background-color: #e8f5e9;
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
         }
 
-        /* 段落样式 */
-        p {
-            color: #34495e;
-            font-size: 16px;
-            margin: 8px 0;
+        .basic-info {
+            display: flex; 
+            align-items: center; 
+            gap: 30px; 
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            flex: 1; 
         }
 
         /* 图标样式 */
@@ -67,11 +75,21 @@
 </head>
 <body>
     <div class="business-card">
-        
-        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.PiJmmfWThahP2Pb-MpVGaAHaEh?rs=1&pid=ImgDetMain" alt="个人头像" class="avatar">
-        <h1>付坤</h1>
-        <div class="specialization">客户端开发</div>
+        <h1>个人名片</h1>
+        <div class="basic-info">
+            <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.PiJmmfWThahP2Pb-MpVGaAHaEh?rs=1&pid=ImgDetMain" 
+                 alt="个人头像" 
+                 class="avatar">
+
+            <div class="info-text">
+                <div class="specialization">姓名： 付坤</div>
+                <div class="specialization">专业方向：客户端开发</div>
+            </div>
+        </div>
+
+ 
         <div class="contact-info">
+            <div class="lianxi">联系方式</div>
             <p>
                 邮箱： byfukun@foxmail.com
             </p>
