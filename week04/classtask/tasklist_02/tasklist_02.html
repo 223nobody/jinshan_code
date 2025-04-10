@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TodoList</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .todolist {
+            width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: var(--bg-container);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333;
+            --border-color: #525252;
+            --bg-container: #f0f8ff;
+        }
+
+        .dark-theme {
+            --bg-color: #2c3e50;
+            --text-color: #ecf0f1;
+            --border-color: #34495e;
+            --bg-container: #34495e;
+        }
+
+        h1 {
+            color: #4F89FF;
+            font-size: 40px;
+            margin: 10px 0 30px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-text {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .task-time {
+            font-size: 0.9em;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .task-actions img {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .task-actions img:hover {
+            opacity: 1;
+        }
+
+        input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .completed .task-text {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-switcher" onclick="toggleTheme()">切换主题</button>
+    <div class="todolist">
+        <h1>Todo List</h1>
+        <div class="input-group">
+            <input type="text" 
+                   id="taskInput" 
+                   placeholder="What needs to be done?"
+                   onkeypress="if(event.key === 'Enter') addTask()">
+        </div>
+        <ul class="task-list" id="taskList"></ul>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let isDarkTheme = localStorage.getItem('isDarkTheme') === 'true';
+
+        // 初始化主题
+        document.body.classList.toggle('dark-theme', isDarkTheme);
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+            
+            if (!taskText) {
+                alert('请输入任务内容');
+                return;
+            }
+
+            tasks.push({
+                id: Date.now(),
+                text: taskText,
+                completed: false,
+                time: new Date().toLocaleString()
+            });
+            
+            taskInput.value = '';
+            saveTasks();
+            renderTasks();
+        }
+
+        function toggleComplete(taskId) {
+            tasks = tasks.map(task => 
+                task.id === taskId ? {...task, completed: !task.completed} : task
+            );
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(taskId) {
+            tasks = tasks.filter(task => task.id !== taskId);
+            saveTasks();
+            renderTasks();
+        }
+
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('isDarkTheme', isDarkTheme);
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = tasks.map(task => `
+                <li class="task-item ${task.completed ? 'completed' : ''}">
+                    <input type="radio" 
+                           ${task.completed ? 'checked' : ''}
+                           onclick="toggleComplete(${task.id})">
+                    <div class="task-info">
+                        <span class="task-text">${task.text}</span>
+                        <span class="task-time">${task.time}</span>
+                    </div>
+                    <div class="task-actions">
+                        <img src="delete.png" 
+                             alt="Delete" 
+                             onclick="deleteTask(${task.id})">
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // 初始渲染
+        renderTasks();
+    </script>
+</body>
+</html>
