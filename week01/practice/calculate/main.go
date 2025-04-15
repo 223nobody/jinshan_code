@@ -1,10 +1,10 @@
-﻿package main
+package main
 
 import (
 	"fmt"
 )
 
-// calculate 执行计算并返回结果
+// calculate
 func calculate(num1, num2 float64, operator string) (float64, error) {
 	switch operator {
 	case "+":
@@ -21,10 +21,10 @@ func calculate(num1, num2 float64, operator string) (float64, error) {
 	default:
 		return 0, fmt.Errorf("无效的运算符: %s", operator)
 	}
-	return 0, nil
+
 }
 
-// getInput 获取用户输入的两个数字
+// getInput 获取用户输入的两个数字q
 func getInput() (float64, float64, error) {
 	var num1, num2 float64
 	fmt.Print("请输入第一个数字: ")
