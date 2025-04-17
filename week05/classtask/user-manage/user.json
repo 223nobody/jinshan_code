@@ -1,0 +1,17 @@
+[
+  {
+    "name": "张三",
+    "email": "zhangsan@example.com",
+    "age": 28
+  },
+  {
+    "name": "李四",
+    "email": "lisi@test.org",
+    "age": 35
+  },
+  {
+    "name": "王五",
+    "email": "wangwu@demo.net",
+    "age": 18
+  }
+]
