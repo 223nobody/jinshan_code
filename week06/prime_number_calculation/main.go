@@ -36,6 +36,11 @@ func main() {
 		os.Exit(3)
 	}
 
+	if start > end {
+		fmt.Println("起始值不能大于结束值")
+		return
+	}
+
 	filename := "primes_" + strconv.Itoa(start) + "_" + strconv.Itoa(end) + ".txt"
 
 	var wg sync.WaitGroup
@@ -51,7 +56,7 @@ func main() {
 	wg.Wait()
 	fmt.Println("所有计算任务完成！")
 	fmt.Printf("找到的素数个数为：%d\n", count)
-	fmt.Printf("程序共耗时: %.2f秒\n", time.Since(starttime).Seconds())
+	fmt.Printf("程序共耗时: %.3fµs\n", float64(time.Since(starttime).Nanoseconds())/1e5)
 }
 
 func Judge(n int, filename string) {
