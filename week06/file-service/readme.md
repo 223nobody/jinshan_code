@@ -57,9 +57,13 @@ create table if not exists files (
 1. api -> response.go 规范响应体结构
 2. config -> config.go 规范配置结构
 3. downloads 存放下载文件
-4. handlers -> file.go 文件及数据库增删改操作方法具体实现 starts.go 数据库查询操作方法具体实现 log.go 日志中间件操作方法具体实现
-5. logger -> daily_log.go log文件操作方法具体实现 format.go 规范日志结构
-6. storage -> database.go 数据库操作调用 filestore.go 文件操作调用
+4. handlers -> file.go 文件及数据库增删改操作方法具体实现 
+               starts.go 数据库查询操作方法具体实现 
+               log.go 日志中间件操作方法具体实现
+5. logger -> daily_log.go log文件操作方法具体实现 
+             format.go 规范日志结构
+6. storage -> database.go 数据库操作调用 
+              filestore.go 文件操作调用
 7. uploads 存放上传文件数据
 8. utils -> validator.go 部分实用函数具体实现(GenerateUUID()、ValidateFileType())
 
