@@ -1,29 +1,29 @@
 **api请求接口集**
- 健康监测接口
- GET http://localhost:8081/health
- 文件上传接口
- POST http://localhost:8081/files/upload
- 文件下载接口(通过uuid)
- GET http://localhost:8081/files/downloadbyuuid/:uuid
- 文件预览接口(通过uuid)
- GET http://localhost:8081/files/previewbyuuid/:uuid
- 文件下载接口(通过id)
- GET http://localhost:8081/files/downloadbyid/:id
- 文件预览接口(通过id)
- GET http://localhost:8081/files/previewbyid/:id
- 文件删除接口(通过uuid)
- DELETE http://localhost:8081/files/:uuid
- 文件列表展示接口
- GET http://localhost:8081/files
- 文件整体数据统计接口
- GET http://localhost:8081/stats/summary
- 文件类别数据统计接口
- GET http://localhost:8081/stats/by-type
+1. 健康监测接口
+    GET http://localhost:8081/health
+2. 文件上传接口
+    POST http://localhost:8081/files/upload
+3. 文件下载接口(通过uuid)
+    GET http://localhost:8081/files/downloadbyuuid/:uuid
+4. 文件预览接口(通过uuid)
+    GET http://localhost:8081/files/previewbyuuid/:uuid
+5. 文件下载接口(通过id)
+    GET http://localhost:8081/files/downloadbyid/:id
+6. 文件预览接口(通过id)
+    GET http://localhost:8081/files/previewbyid/:id
+7. 文件删除接口(通过uuid)
+    DELETE http://localhost:8081/files/:uuid
+8. 文件列表展示接口
+    GET http://localhost:8081/files
+9. 文件整体数据统计接口
+    GET http://localhost:8081/stats/summary
+10. 文件类别数据统计接口
+    GET http://localhost:8081/stats/by-type
 
 
 **数据库建表语句(表名files)**
 
-CREATE TABLE IF NOT EXISTS files (
+create table if not exists files (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     uuid TEXT NOT NULL UNIQUE,
     filename TEXT NOT NULL,
@@ -54,18 +54,14 @@ CREATE TABLE IF NOT EXISTS files (
 └── utils
     └── validator.go
 
- api -> response.go 规范响应体结构
- config -> config.go 规范配置结构
- downloads 存放下载文件
- handlers -> file.go 文件及数据库增删改操作方法具体实现 
-             starts.go 数据库查询操作方法具体实现 
-             log.go 日志中间件操作方法具体实现
- logger -> daily_log.go log文件操作方法具体实现 
-           format.go 规范日志结构
- storage -> database.go 数据库操作调用 
-            filestore.go 文件操作调用
- uploads 存放上传文件数据
- utils -> validator.go 部分实用函数具体实现(GenerateUUID()、ValidateFileType())
+1. api -> response.go 规范响应体结构
+2. config -> config.go 规范配置结构
+3. downloads 存放下载文件
+4. handlers -> file.go 文件及数据库增删改操作方法具体实现 starts.go 数据库查询操作方法具体实现 log.go 日志中间件操作方法具体实现
+5. logger -> daily_log.go log文件操作方法具体实现 format.go 规范日志结构
+6. storage -> database.go 数据库操作调用 filestore.go 文件操作调用
+7. uploads 存放上传文件数据
+8. utils -> validator.go 部分实用函数具体实现(GenerateUUID()、ValidateFileType())
 
 
 **技术亮点**
@@ -122,20 +118,24 @@ CREATE TABLE IF NOT EXISTS files (
 
 **主要不足**
 1. ​​日志与监控不足​​
- ​​风险表现​​:
+
+​风险表现​​:
 无法追踪文件删除失败的具体原因
  无法发现高频恶意上传请求
 
 2. ​​分布式场景适配不足​​
-​ ​风险表现​​:
+​
+​风险表现​​:
 文件存储目录无法在多节点间共享
- 数据库使用 SQLite 不利于集群部署
+数据库使用 SQLite 不利于集群部署
 
-​ ​优化建议​​:
+​
+​优化建议​​:
 将文件存储迁移至 ​​MinIO/S3​​ 等对象存储服务
  更换数据库为 ​​MySQL/PostgreSQL​​
 
 3. ​​接口规范性待提升​​
-​ ​典型问题​​:
+​
+​典型问题​​:
 删除接口使用 DELETE /files/:uuid，但按 RESTful 规范应为 DELETE /files/uuid/:uuid
- 响应状态码未完全遵循 HTTP 标准（如文件不存在时返回 404）
+响应状态码未完全遵循 HTTP 标准（如文件不存在时返回 404）
