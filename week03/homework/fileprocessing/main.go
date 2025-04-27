@@ -85,6 +85,7 @@ func main() {
 		filename1, len(words1), time.Since(start).Seconds())
 	fmt.Printf("成功插入 %s 后的时间为: ", filename1)
 	printTimeNow()
+	midTime := time.Now() // 记录中间时间
 
 	// 处理CET6数据
 	words2, err := loadJSONData(filename2)
@@ -97,9 +98,10 @@ func main() {
 	}
 
 	fmt.Printf("[成功] 插入json文件 %s  | 插入 %d 条数据 | 耗时: %.2f秒\n",
-		filename2, len(words2), time.Since(start).Seconds())
+		filename2, len(words2), time.Since(midTime).Seconds())
 	fmt.Printf("成功插入 %s 后的时间为: ", filename2)
 	printTimeNow()
+	fmt.Printf("\n整个操作总耗时为 %.2f秒\n ", time.Since(start).Seconds())
 }
 
 // initNewDatabase 初始化新数据库连接并创建表结构
