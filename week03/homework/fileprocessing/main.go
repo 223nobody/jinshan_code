@@ -101,7 +101,11 @@ func main() {
 		filename2, len(words2), time.Since(midTime).Seconds())
 	fmt.Printf("成功插入 %s 后的时间为: ", filename2)
 	printTimeNow()
+<<<<<<< HEAD
 	fmt.Printf("\n整个操作总耗时为 %.2f秒\n ", time.Since(start).Seconds())
+=======
+	fmt.Printf("整个操作总耗时为 %.2f秒\n", time.Since(start).Seconds())
+>>>>>>> master
 }
 
 // initNewDatabase 初始化新数据库连接并创建表结构
