@@ -1,0 +1,340 @@
+[
+  {
+    "aiStartTime": "2025-05-07 01:48:51",
+    "aiEndTime": "2025-05-07 01:48:53",
+    "aiCostTime": "2.36s",
+    "status": "failed",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "",
+      "answers": null,
+      "rights": null
+    },
+    "error": "响应解析失败: json: cannot unmarshal string into Go struct field QuestionResponse.rights of type []string"
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:51",
+    "aiEndTime": "2025-05-07 01:48:54",
+    "aiCostTime": "2.61s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在使用Gin框架时，以下哪项是用于定义路由的基本方法？",
+      "answers": [
+        "A: gin.Default()",
+        "B: router.GET()",
+        "C: gin.New()",
+        "D: router.POST()"
+      ],
+      "rights": [
+        "B"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:51",
+    "aiEndTime": "2025-05-07 01:48:54",
+    "aiCostTime": "2.80s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在Gin框架中，如何定义一个带有参数的路由？",
+      "answers": [
+        "A: router.GET(\"/user\", func(c *gin.Context) { })",
+        "B: router.GET(\"/user/:id\", func(c *gin.Context) { id := c.Param(\"id\") })",
+        "C: router.POST(\"/user/create\", func(c *gin.Context) { })",
+        "D: router.GET(\"/user/list\", func(c *gin.Context) { list := c.Query(\"list\") })"
+      ],
+      "rights": [
+        "B"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:55",
+    "aiEndTime": "2025-05-07 01:48:57",
+    "aiCostTime": "2.27s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在Gin框架中，如何定义一个路由处理函数来响应GET请求并接收路径参数?",
+      "answers": [
+        "A: func(c *gin.Context) { c.JSON(200, gin.H{\"message\": \"Hello\"}) }",
+        "B: func(ctx context.Context) { ctx.WriteString(200, \"Hello\") }",
+        "C: func(c *gin.Context) { id := c.Param(\"id\"); c.JSON(200, gin.H{\"id\": id}) }",
+        "D: func(c *gin.Context) { c.String(200, \"Hello World\") }"
+      ],
+      "rights": [
+        "C"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:55",
+    "aiEndTime": "2025-05-07 01:48:57",
+    "aiCostTime": "2.27s",
+    "status": "failed",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "",
+      "answers": null,
+      "rights": null
+    },
+    "error": "响应解析失败: json: cannot unmarshal string into Go struct field QuestionResponse.rights of type []string"
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:55",
+    "aiEndTime": "2025-05-07 01:48:58",
+    "aiCostTime": "2.57s",
+    "status": "failed",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "",
+      "answers": null,
+      "rights": null
+    },
+    "error": "响应解析失败: json: cannot unmarshal string into Go struct field QuestionResponse.rights of type []string"
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:58",
+    "aiEndTime": "2025-05-07 01:48:59",
+    "aiCostTime": "1.26s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在使用Gin框架时，以下哪个方法用于启动HTTP服务并监听指定端口？",
+      "answers": [
+        "A: gin.Get()",
+        "B: gin.Run()",
+        "C: gin.Post()",
+        "D: gin.Default()"
+      ],
+      "rights": [
+        "B"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:58",
+    "aiEndTime": "2025-05-07 01:49:00",
+    "aiCostTime": "1.36s",
+    "status": "failed",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "",
+      "answers": null,
+      "rights": null
+    },
+    "error": "响应解析失败: json: cannot unmarshal string into Go struct field QuestionResponse.rights of type []string"
+  },
+  {
+    "aiStartTime": "2025-05-07 01:48:58",
+    "aiEndTime": "2025-05-07 01:49:00",
+    "aiCostTime": "1.88s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在使用Gin框架时，以下哪种方式可以正确地定义一个路由处理函数？",
+      "answers": [
+        "A: func(c *gin.Context) { c.JSON(200, gin.H{\"message\": \"Hello\"}) }",
+        "B: func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, \"Hello\") }",
+        "C: func() string { return \"Hello\" }",
+        "D: func(c *gin.Context) { c.WriteString(\"Hello\") }"
+      ],
+      "rights": [
+        "A"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:49:02",
+    "aiEndTime": "2025-05-07 01:49:04",
+    "aiCostTime": "2.05s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在Gin框架中，如何定义一个简单的GET请求路由？",
+      "answers": [
+        "A: router.GET(\"/path\", func(c *gin.Context) { c.JSON(200, gin.H{\"message\": \"Hello\"}) })",
+        "B: router.POST(\"/path\", func(c *gin.Context) { c.String(200, \"Hello\") })",
+        "C: router.GET(\"/path\", func() { fmt.Println(\"Hello\") })",
+        "D: router.Handle(\"GET\", \"/path\", func(c *gin.Context) { c.Writer.WriteString(\"Hello\") })"
+      ],
+      "rights": [
+        "A"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:49:02",
+    "aiEndTime": "2025-05-07 01:49:05",
+    "aiCostTime": "2.80s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在使用Gin框架时，以下哪个代码片段能够正确地定义一个处理GET请求的路由？",
+      "answers": [
+        "A: r.GET(\"/hello\", func(c *gin.Context) { c.JSON(200, gin.H{\"message\": \"world\"}) })",
+        "B: r.POST(\"/hello\", func(c *gin.Context) { c.JSON(200, gin.H{\"message\": \"world\"}) })",
+        "C: r.GET(\"/hello\", func() { fmt.Println(\"Hello, world!\") })",
+        "D: r.Handle(\"GET\", \"/hello\", func(c *gin.Context) { c.String(200, \"Hello, world!\") })"
+      ],
+      "rights": [
+        "A"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:49:02",
+    "aiEndTime": "2025-05-07 01:49:05",
+    "aiCostTime": "2.81s",
+    "status": "failed",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 1,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "",
+      "answers": null,
+      "rights": null
+    },
+    "error": "响应解析失败: json: cannot unmarshal string into Go struct field QuestionResponse.rights of type []string"
+  },
+  {
+    "aiStartTime": "2025-05-07 01:49:07",
+    "aiEndTime": "2025-05-07 01:49:09",
+    "aiCostTime": "1.70s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 2,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在使用Gin框架时，以下哪些说法是正确的？",
+      "answers": [
+        "A: Gin 是一个轻量级且高效的 Go web 框架。",
+        "B: Gin 使用 Martini 的 API 设计，但性能更高。",
+        "C: Gin 默认提供强大的中间件支持，例如日志记录和跨域处理。",
+        "D: Gin 不支持自定义路由规则。"
+      ],
+      "rights": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:49:07",
+    "aiEndTime": "2025-05-07 01:49:09",
+    "aiCostTime": "2.06s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 2,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在Gin框架中，以下关于中间件的描述哪些是正确的？",
+      "answers": [
+        "A: 中间件是在处理请求和响应时插入到链中的函数。",
+        "B: 使用 gin.Use() 可以注册多个中间件。",
+        "C: 中间件只能用于拦截请求，无法修改响应。",
+        "D: 中间件按照注册顺序从后向前执行。"
+      ],
+      "rights": [
+        "A",
+        "B",
+        "D"
+      ]
+    }
+  },
+  {
+    "aiStartTime": "2025-05-07 01:49:07",
+    "aiEndTime": "2025-05-07 01:49:09",
+    "aiCostTime": "2.34s",
+    "status": "success",
+    "aiReq": {
+      "model": "",
+      "language": "go",
+      "type": 2,
+      "keyword": "gin框架"
+    },
+    "aiRes": {
+      "title": "在Gin框架中，以下关于路由绑定的描述哪些是正确的？",
+      "answers": [
+        "A: Gin框架可以通过`router.GET()`方法定义GET请求的路由。",
+        "B: 使用`c.BindJSON()`方法可以从请求体中解析JSON数据并绑定到结构体。",
+        "C: `c.JSON()`方法用于向客户端返回JSON格式的数据。",
+        "D: Gin框架中的`Use()`方法用于为所有路由添加中间件，但无法针对特定路由单独设置。"
+      ],
+      "rights": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    }
+  }
+]
