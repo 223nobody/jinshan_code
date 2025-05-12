@@ -49,6 +49,8 @@ func (c *DeepSeekClient) Generate(ctx context.Context, req models.QuestionReques
 			},
 		},
 		ResponseFormat: &openai.ChatCompletionResponseFormat{Type: "json_object"},
+		Temperature:    0.3,
+		MaxTokens:      500,
 	})
 
 	if err != nil {
@@ -62,16 +64,51 @@ func (c *DeepSeekClient) Generate(ctx context.Context, req models.QuestionReques
 func buildDeepseekPrompt(req models.QuestionRequest) string {
 	var builder strings.Builder
 
-	builder.WriteString(fmt.Sprintf("请生成关于【%s】的编程题，要求：\n", req.Keyword))
+	builder.WriteString(fmt.Sprintf("请生成关于【%s】的编程题，要求如下：\n", req.Keyword))
 	builder.WriteString(fmt.Sprintf("- 编程语言：%s\n", req.Language))
 	builder.WriteString(fmt.Sprintf("- 题目类型：%s\n", getQuestionTypeText(req.Type)))
-	builder.WriteString("- 选项数量：4个\n\n")
-	builder.WriteString("请严格使用如下JSON格式返回结果：\n")
-	builder.WriteString(`{
-  "title": "题目内容",
-  "answers": [A: "选项1", B: "选项2", C: "选项3", D: "选项4"],
-  "rights": [正确选项对应索引下标对应的字母(例如0对应A，1对应B，2对应C，3对应D)]
-}`)
+
+	switch req.Type {
+	case models.SingleSelect:
+		builder.WriteString("- 必须且仅有一个正确答案，答案字母需从A/B/C/D中选择\n")
+	case models.MultiSelect:
+		builder.WriteString("- 正确答案数量需在2-4个之间，答案字母必须按A、B、C、D顺序排列且没有重复字母出现\n")
+	}
+
+	builder.WriteString("\n请严格遵循以下JSON格式：\n")
+	switch req.Type {
+	case models.SingleSelect:
+		builder.WriteString(`
+			{
+				"title": "关于Golang并发的说法哪个正确？",
+				"answers": [
+					"A: channel只能传递基本数据类型",
+					"B: sync.Mutex适用于读多写少场景",
+					"C: WaitGroup的Add()必须在goroutine外调用",
+					"D: map的并发读写需要加锁"
+				],
+				"rights": ["D"]  //有且仅有一个正确答案
+			}`)
+	case models.MultiSelect:
+		builder.WriteString(`
+        {
+			"title": "下面有关Python列表操作相关说法正确的是？",
+			"answers": [
+				"A: 列表推导式比for循环效率更高",
+				"B: 切片操作会创建新对象",
+				"C: append()会直接修改原列表",
+				"D: 列表可以作为字典的键"
+			],
+			"rights": ["A","B"]
+		    }`)
+	}
+
+	builder.WriteString("\n\n❗❗必须遵守：\n")
+	builder.WriteString("1. 多选题答案必须按A、B、C、D顺序排列\n")
+	builder.WriteString("2. 单选题必须只能有一个答案\n")
+	builder.WriteString("3. 答案字母必须唯一\n")
+	builder.WriteString("4. 选项前缀严格按顺序生成\n")
+	builder.WriteString("5. 保证题目和选项不重复\n")
 
 	return builder.String()
 }

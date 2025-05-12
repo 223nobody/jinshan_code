@@ -62,7 +62,7 @@ func buildLog(req models.QuestionRequest, resp *models.QuestionResponse, err err
 	logEntry := models.AILog{
 		AIStartTime: start.Format("2006-01-02 15:04:05"),
 		AIEndTime:   time.Now().Format("2006-01-02 15:04:05"),
-		AICostTime:  fmt.Sprintf("%.2fs", time.Since(start).Seconds()),
+		AICostTime: fmt.Sprintf("%ds", int(time.Since(start).Seconds())),
 		AIReq:       req,
 		Status:      "success",
 	}

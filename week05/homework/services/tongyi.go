@@ -52,6 +52,8 @@ func (c *TongyiClient) Generate(ctx context.Context, req models.QuestionRequest)
 			},
 		},
 		ResponseFormat: &openai.ChatCompletionResponseFormat{Type: "json_object"},
+		Temperature:    0.3,
+		MaxTokens:      500,
 	})
 
 	if err != nil {
@@ -71,16 +73,49 @@ func buildTongyiPrompt(req models.QuestionRequest) string {
 	builder.WriteString(fmt.Sprintf("- 题目类型：%s\n", getQuestionTypeText1(req.Type)))
 	builder.WriteString("- 选项数量：4个\n\n")
 	// 阿里云对格式要求更严格，需明确说明键名
-	builder.WriteString(`请严格使用如下JSON格式返回结果：
-{
-   "title": "题目内容",
-  "answers": ["A: 选项1","B: 选项2","C: 选项3","D: 选项4"(例如"D: 数组切片操作会改变原始数组的内容")],
-  "rights": [选项一正确对应"A"，选项二正确对应"B"，选项三正确对应"C"，选项四正确对应"D"]
-}`)
+	switch req.Type {
+	case models.SingleSelect:
+		builder.WriteString("- 必须且仅有一个正确答案，答案字母需从A/B/C/D中选择\n")
+	case models.MultiSelect:
+		builder.WriteString("- 正确答案数量需在2-4个之间\n- 答案字母必须按A、B、C、D顺序排列\n- 禁止出现重复字母\n")
+	}
+
+	builder.WriteString("\n请严格遵循与以下样例相同的JSON格式：\n")
+	switch req.Type {
+	case models.SingleSelect:
+		builder.WriteString(`
+			{
+				"title": "关于Golang并发的说法哪个正确？",
+				"answers": [
+					"A: channel只能传递基本数据类型",
+					"B: sync.Mutex适用于读多写少场景",
+					"C: WaitGroup的Add()必须在goroutine外调用",
+					"D: map的并发读写需要加锁"
+				],
+				"rights": ["D"]  //有且仅有一个正确答案
+			}`)
+	case models.MultiSelect:
+		builder.WriteString(`
+        {
+			"title": "下面有关Python列表操作相关说法正确的是？",
+			"answers": [
+				"A: 列表推导式比for循环效率更高",
+				"B: 切片操作会创建新对象",
+				"C: append()会直接修改原列表",
+				"D: 列表可以作为字典的键"
+			],
+			"rights": ["A","B"]
+		}`)
+	}
+
+	builder.WriteString("\n\n必须遵守：\n")
+	builder.WriteString("1. 选项前缀必须严格按A/B/C/D顺序生成（示例错误：A→C→B ❌）\n")
+	builder.WriteString("2. 多选题答案必须按字母顺序排列（如['A','C'] ✅，['C','A'] ❌）\n")
+	builder.WriteString("3. 每个答案字母只能出现一次（出现重复直接视为错误）\n")
+	builder.WriteString("4. 编程题的ABCD四个选项必须是纯代码段\n")
 
 	return builder.String()
 }
-
 // 解析阿里云返回的JSON（适配可能的格式差异）
 func parseTongyiResponse(content string) (*models.QuestionResponse, error) {
 	var response models.QuestionResponse
