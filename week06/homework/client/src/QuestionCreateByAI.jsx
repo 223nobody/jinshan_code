@@ -1,71 +1,107 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Form,
   Select,
-  Radio,
   InputNumber,
   Button,
-  Space,
   Typography,
-  Spin,
   Card,
   Input,
   Checkbox,
+  Spin,
 } from "antd";
 import { message } from "antd";
-import { FontSizeOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
+const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
-// 修改预览区域和交互逻辑
 const QuestionCreateByAI = () => {
-  // 新增状态管理
   const [selectedQuestions, setSelectedQuestions] = useState(new Set());
-  const [form] = Form.useForm(); // Define the form instance
-  const [previewQuestions, setPreviewQuestions] = useState([]); // Define previewQuestions state
-  const [loading, setLoading] = useState(false); // Define loading state
+  const [form] = Form.useForm();
+  const scrollContainerRef = useRef(null);
+  const [previewQuestions, setPreviewQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
-  // 优化选中逻辑
-  const handleSelect = (index) => {
+  // 修复的滚动控制方法
+  const handleScrollToTop = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleScrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      const { scrollHeight, clientHeight } = scrollContainerRef.current;
+      scrollContainerRef.current.scrollTo({
+        top: scrollHeight - clientHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // 修复的题目选择逻辑
+  const handleSelectInternal = (index) => {
     setSelectedQuestions((prev) => {
       const newSet = new Set(prev);
       newSet.has(index) ? newSet.delete(index) : newSet.add(index);
       return newSet;
     });
+
+    // 自动滚动定位修复
+    if (scrollContainerRef.current) {
+      const questionElement = document.getElementById(`question-${index}`);
+      if (questionElement) {
+        const containerTop =
+          scrollContainerRef.current.getBoundingClientRect().top;
+        const elementTop = questionElement.getBoundingClientRect().top;
+        const offset = elementTop - containerTop - 50;
+
+        scrollContainerRef.current.scrollTo({
+          top: scrollContainerRef.current.scrollTop + offset,
+          behavior: "smooth",
+        });
+      }
+    }
   };
 
-  // 新增添加到题库功能
-  // 修改handleAddToBank函数
   const handleAddToBank = async () => {
     try {
-      // 验证表单数据
       const values = await form.validateFields();
       if (!values.languages || values.languages.length === 0) {
         return message.error("请至少选择一种编程语言");
       }
 
-      // 构建符合接口要求的请求体
       const payload = Array.from(selectedQuestions).map((i) => {
         const question = previewQuestions[i];
         return {
-          type: { single: 1, multiple: 2, programming: 3 }[question.type] || 1,
+          type:
+            {
+              single: 1,
+              multiple: 2,
+              programming: 3,
+            }[question.type] || 1,
           title: question.title,
           language: values.languages[0],
-          answers: question.answers.map((a) => a.split("：")[1]?.trim() || a),
-          rights: question.rights.map((r) => r[0]), // 取第一个字符
+          answers: question.answers.map((a) => {
+            // 处理带字母前缀的答案
+            const match = a.match(/^[A-Z]:\s*(.+)/);
+            return match ? match[1] : a;
+          }),
+          rights: question.rights,
         };
       });
 
-      // 发送请求
       const response = await fetch("/api/questions/batch-insert", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      // 处理响应
       const result = await response.json();
       if (response.status !== 200) {
         throw new Error(result.msg || `HTTP错误 ${response.status}`);
@@ -78,113 +114,105 @@ const QuestionCreateByAI = () => {
       message.success(`成功添加${payload.length}题`);
       setSelectedQuestions(new Set());
     } catch (error) {
-      console.error("添加失败详情:", {
-        error,
-        time: new Date().toISOString(),
-      });
+      console.error("添加失败详情:", { error, time: new Date().toISOString() });
       message.error(`添加失败: ${error.message}`);
     }
   };
+
   const handleGenerate = async (values) => {
     setLoading(true);
+    setGenerating(true);
     try {
-      // 生成指定数量的题目
-      const requests = Array.from({ length: values.count }).map(() =>
-        fetch("/api/questions/CreateByAI", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "", // 根据实际模型填写
-            language: values.languages[0], // 取第一个选中的语言
-            type: values.type === "multiple" ? 2 : 1, // 类型转换
-            keyword: values.keyword,
-          }),
-        })
+      // 修改为单次请求
+      const response = await fetch("/api/questions/CreateByAI", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "",
+          language: values.languages[0],
+          count: values.count,
+          type:
+            values.type === "multiple"
+              ? 2
+              : values.type === "programming"
+              ? 3
+              : 1,
+          keyword: values.keyword,
+        }),
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const { aiRes } = await response.json();
+
+      // 直接设置题目列表
+      setPreviewQuestions(
+        aiRes.questions.map((q, idx) => ({
+          id: idx + Date.now(), // 生成唯一ID
+          title: q.title,
+          type: values.type,
+          answers: q.answers,
+          rights: q.rights,
+        }))
       );
 
-      // 处理并发请求
-      const responses = await Promise.allSettled(requests);
-
-      // 过滤成功的响应
-      const validResponses = responses
-        .filter((res) => res.status === "fulfilled" && res.value.ok)
-        .map((res) => res.value);
-
-      // 提取题目数据
-      const questions = await Promise.all(
-        validResponses.map((res) =>
-          res.json().then((data) => ({
-            title: data.aiRes.title,
-            type: values.type, // 保留前端类型
-            answers: data.aiRes.answers,
-            rights: data.aiRes.rights,
-          }))
-        )
-      );
-
-      // 更新预览区域
-      setPreviewQuestions(questions);
-
-      // 显示生成结果提示
-      if (questions.length < values.count) {
-        message.warning(`成功生成${questions.length}/${values.count}题`);
-      } else {
-        message.success(`已生成${values.count}道题目`);
-      }
+      message.success(`成功生成${aiRes.questions.length}题`);
+      handleScrollToTop();
     } catch (error) {
       message.error("生成失败：" + error.message);
     } finally {
       setLoading(false);
+      setGenerating(false);
     }
   };
 
   return (
-    <div style={{ display: "flex", height: "100%" }}>
-      <Card style={{ width: 450, marginRight: 16 }}>
-        {
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <img
-              src="/image ai.png"
-              alt="logo"
-              style={{ width: 50, height: 50 }}
-            />
-            <span style={{ fontSize: 20, fontWeight: "bold" }}>
-              AI 生成试题
-            </span>
-          </div>
-        }
+    <div style={{ display: "flex", height: "100vh", padding: 24 }}>
+      {/* 左侧表单完全保持不变 */}
+      <Card
+        style={{
+          width: 450,
+          marginRight: 16,
+          borderRadius: 8,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        }}
+      >
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 24 }}
+        >
+          <img
+            src="/image ai.png"
+            alt="logo"
+            style={{ width: 50, height: 50, marginRight: 12 }}
+          />
+          <Title level={4} style={{ margin: 0 }}>
+            AI 生成试题
+          </Title>
+        </div>
         <Form
           form={form}
           onFinish={handleGenerate}
           initialValues={{ type: "single", count: 3 }}
         >
+          {/* 保持原有表单结构不变 */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)", // 两列等宽
-              gap: 16, // 间距
-              alignItems: "flex-end", // 底部对齐
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: 16,
+              marginBottom: 5,
             }}
           >
-            {/* 题型 */}
-            <Form.Item
-              label="题型"
-              name="type"
-              style={{ marginTop: 20 }}
-              rules={[{ required: true }]}
-            >
-              <Select style={{ width: "100%" }}>
+            <Form.Item label="题型" name="type" rules={[{ required: true }]}>
+              <Select>
                 <Select.Option value="single">单选题</Select.Option>
                 <Select.Option value="multiple">多选题</Select.Option>
                 <Select.Option value="programming">编程题</Select.Option>
               </Select>
             </Form.Item>
-
-            {/* 题目数量 */}
             <Form.Item
               label="题目数量"
               name="count"
-              style={{ marginTop: 20 }}
               rules={[{ required: true }]}
             >
               <InputNumber
@@ -198,52 +226,53 @@ const QuestionCreateByAI = () => {
 
           <Form.Item
             name="languages"
-            label="语言"
-            style={{ marginTop: 0 }}
+            label="编程语言"
             rules={[{ required: true, message: "请选择语言" }]}
           >
             <Select
               mode="multiple"
               placeholder="选择语言"
-              style={{ width: "100%" }}
+              optionLabelProp="label"
             >
-              <Select.Option value="go">Go 语言</Select.Option>
-              <Select.Option value="java">Java 语言</Select.Option>
-              <Select.Option value="python">Python 语言</Select.Option>
-              <Select.Option value="javascript">JavaScript 语言</Select.Option>
-              <Select.Option value="c++">C++ 语言</Select.Option>
+              <Select.Option value="go" label="Go">
+                Go 语言
+              </Select.Option>
+              <Select.Option value="java" label="Java">
+                Java 语言
+              </Select.Option>
+              <Select.Option value="python" label="Python">
+                Python 语言
+              </Select.Option>
+              <Select.Option value="javascript" label="JS">
+                JavaScript 语言
+              </Select.Option>
+              <Select.Option value="c++" label="C++">
+                C++ 语言
+              </Select.Option>
             </Select>
           </Form.Item>
 
           <Form.Item
             name="keyword"
             label="关键词"
-            style={{ marginTop: 0 }}
             rules={[{ required: true, message: "请输入关键词" }]}
           >
-            <Input placeholder="请输入关键词" style={{ flex: 1 }} />
+            <Input placeholder="例如：面向对象、数组" />
           </Form.Item>
 
-          {/* 生成按钮 */}
-          <Form.Item
-            style={{
-              marginTop: 36,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
+          <Form.Item>
             <Button
+              type="primary"
               htmlType="submit"
+              block
+              icon={<PlusOutlined />}
+              loading={loading}
               style={{
-                width: 300,
                 height: 40,
                 borderRadius: 8,
                 backgroundColor: "#1777FF",
-                border: "1px solid #1890ff",
-                color: "#fff",
+                borderColor: "#1777FF",
               }}
-              icon={<PlusOutlined style={{ color: "#fff" }} />}
-              loading={loading}
             >
               生成并预览题库
             </Button>
@@ -251,17 +280,32 @@ const QuestionCreateByAI = () => {
         </Form>
       </Card>
 
-      {/* 右侧预览区域 */}
-      <Card style={{ flex: 1, overflow: "auto", background: "#F0F8FF" }}>
+      {/* 右侧预览区域修复滚动 */}
+      <Card
+        style={{
+          flex: 1,
+          borderRadius: 8,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          position: "relative", // 新增定位
+        }}
+        bodyStyle={{
+          padding: 0,
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
         <div
           style={{
+            padding: "12px 24px",
+            backgroundColor: "#fff",
+            borderBottom: "1px solid #f0f0f0",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "8px 16px",
-            background: "#fff",
-            borderRadius: 4,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         >
           <span style={{ color: "#666" }}>
@@ -269,104 +313,178 @@ const QuestionCreateByAI = () => {
           </span>
           <Button
             type="primary"
-            size="small"
-            disabled={selectedQuestions.size === 0}
             onClick={handleAddToBank}
+            disabled={selectedQuestions.size === 0}
             style={{
               width: 120,
-              height: 32,
-              fontSize: 14,
-              borderRadius: 4,
+              backgroundColor: "#1777FF",
+              borderColor: "#1777FF",
+              color: "#fff",
             }}
           >
             添加到题库
           </Button>
         </div>
 
-        {previewQuestions.map((q, idx) => (
-          <Card
-            key={idx}
-            size="small"
+        {/* 加载状态覆盖层 */}
+        {generating && (
+          <div
             style={{
-              margin: "12px 16px",
-              background: selectedQuestions.has(idx) ? "#E6F4FF" : "#F3F4F6",
-              border: selectedQuestions.has(idx)
-                ? "1px solid #1890ff"
-                : "1px solid #F3F4F6",
-              borderRadius: 6,
-              cursor: "pointer",
-              transition: "all 0.3s",
-            }}
-            bodyStyle={{
-              padding: "12px 16px",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              zIndex: 999,
               display: "flex",
-              alignItems: "flex-start",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
             }}
-            onClick={() => handleSelect(idx)}
           >
-            {/* Checkbox 选择器 */}
-            <Checkbox
-              checked={selectedQuestions.has(idx)}
+            <Spin indicator={antIcon} />
+            <div
               style={{
-                marginRight: 12,
-                marginTop: 2,
-                flexShrink: 0,
+                marginTop: 16,
+                color: "#1777FF",
+                fontSize: 16,
+                fontWeight: 500,
               }}
-            />
-
-            {/* 题目内容容器 */}
-            <div style={{ flex: 1, fontFamily: "Arial, sans-serif" }}>
-              <p
-                style={{
-                  fontSize: 16,
-                  color: "#1a3353",
-                  marginBottom: 8,
-                  fontWeight: 500,
-                }}
-              >
-                {idx + 1}. {q.title}
-              </p>
-
-              <ul
-                style={{
-                  margin: "8px 0",
-                  paddingLeft: 0,
-                  listStyleType: "none",
-                }}
-              >
-                {q.answers.map((opt, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      marginBottom: 6,
-                      fontSize: 15,
-                      color: "#595959",
-                    }}
-                  >
-                    {opt}
-                  </li>
-                ))}
-              </ul>
-
-              {/* 参考答案右对齐 */}
-              <div
-                style={{
-                  textAlign: "right",
-                }}
-              >
-                <span
-                  style={{
-                    color: "#00B365",
-                    fontSize: 15,
-                    fontWeight: 500,
-                  }}
-                >
-                  参考答案：{q.rights.join(", ")}
-                </span>
-              </div>
+            >
+              AI正在努力生成题目中...
             </div>
-          </Card>
-        ))}
+          </div>
+        )}
+
+        {/* 修复滚动容器 */}
+        <div
+          ref={scrollContainerRef}
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "16px 24px",
+            height: "calc(100vh - 180px)",
+            position: "relative",
+            opacity: generating ? 0.5 : 1, // 添加透明度变化
+            transition: "opacity 0.3s",
+            scrollbarGutter: "stable",
+          }}
+          className="custom-scrollbar"
+        >
+          {previewQuestions.map((q, idx) => (
+            <div key={idx} id={`question-${idx}`} style={{ marginBottom: 12 }}>
+              <Card
+                size="small"
+                style={{
+                  backgroundColor: selectedQuestions.has(idx)
+                    ? "#E6F4FF"
+                    : "#F5F5F5",
+                  borderColor: selectedQuestions.has(idx)
+                    ? "#1777FF"
+                    : "#d9d9d9",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onClick={() => handleSelectInternal(idx)}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
+                  <Checkbox
+                    checked={selectedQuestions.has(idx)}
+                    style={{ marginRight: 16, flexShrink: 0, background: "" }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 12,
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "#1777FF",
+                          fontSize: 18,
+                          fontWeight: 500,
+                          marginRight: 8,
+                        }}
+                      >
+                        题目{idx + 1}
+                      </span>
+                      <h4
+                        style={{
+                          fontSize: 18,
+                          color: "#1a3353",
+                          margin: 0,
+                        }}
+                      >
+                        {q.title}
+                      </h4>
+                    </div>
+
+                    <div style={{ marginLeft: 8 }}>
+                      {q.answers.map((answer, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            padding: "8px 0",
+                            borderBottom: "1px solid #f0f0f0",
+                            fontSize: 16,
+                          }}
+                        >
+                          {answer}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ marginTop: 12, textAlign: "right" }}>
+                      <span
+                        style={{
+                          color: "#52c41a",
+                          fontSize: 16,
+                        }}
+                      >
+                        参考答案：{q.rights.join(", ")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          ))}
+        </div>
+
+        {/* 底部滚动控制按钮 */}
+        <div
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "rgba(240,248,255,0.8)",
+            borderTop: "1px solid rgba(240,240,240,0.5)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 16,
+            }}
+          >
+            <Button
+              shape="round"
+              onClick={handleScrollToTop}
+              style={{ flex: 1 }}
+            >
+              ↑ 回到顶部
+            </Button>
+            <Button
+              shape="round"
+              onClick={handleScrollToBottom}
+              style={{ flex: 1 }}
+            >
+              ↓ 去到底部
+            </Button>
+          </div>
+        </div>
       </Card>
     </div>
   );

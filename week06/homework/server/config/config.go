@@ -23,14 +23,20 @@ const (
 type QuestionRequest struct {
 	Model    string `json:"model" binding:"omitempty,oneof=deepseek tongyi"`                  // 非必选，默认tongyi
 	Language string `json:"language" binding:"omitempty,oneof=go java python javascript c++ css html"` // 非必选，默认go
+	Count    int    `json:"count" binding:"omitempty,min=3,max=10"` 
 	Type     int    `json:"type" binding:"omitempty,oneof=1 2 3"`
 	Keyword  string `json:"keyword" binding:"required"` // 必选参数
 }
+
 
 type QuestionResponse struct {
 	Title   string   `json:"title"`
 	Answers []string `json:"answers"`
 	Rights  []string `json:"rights"`
+}
+
+type QuestionResponses struct {
+	Questions []QuestionResponse `json:"questions"`
 }
 
 type QuestionRequest1 struct {
@@ -42,13 +48,13 @@ type QuestionRequest1 struct {
 	Rights   []string `json:"rights"`   // 正确答案
 }
 type AILog struct {
-	AIStartTime string           `json:"aiStartTime"`
-	AIEndTime   string           `json:"aiEndTime"`
-	AICostTime  string           `json:"aiCostTime"`
-	Status      string           `json:"status"`
-	AIReq       QuestionRequest  `json:"aiReq"`
-	AIRes       QuestionResponse `json:"aiRes,omitempty"`
-	Error       string           `json:"error,omitempty"`
+    AIRes      QuestionResponses `json:"aiRes"`  
+    AIReq      QuestionRequest   `json:"aiReq"`
+    Status     string            `json:"status"`
+    Error      string            `json:"error,omitempty"`
+    AIStartTime string           `json:"aiStartTime"`
+    AIEndTime   string           `json:"aiEndTime"`
+    AICostTime  string           `json:"aiCostTime"`
 }
 
 func LoadConfig() (*AIConfig, error) {

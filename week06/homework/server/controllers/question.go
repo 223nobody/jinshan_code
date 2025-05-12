@@ -44,38 +44,8 @@ func (c *QuestionController) GenerateQuestion(ctx *gin.Context) {
 		log.Printf("日志存储失败: %v", saveErr)
 	}
 
-
 	//数据库操作被注释掉，封装在函数AddQuestions中
-	// 构造响应
-	// // 初始化事务
-	// tx, err := c.db.Beginx()
-	// if err != nil {
-	// 	api.Error(ctx, http.StatusInternalServerError, "服务不可用")
-	// 	return
-	// }
-	// // 写入数据库记录
-	// _, err = tx.NamedExec(`
-	// 	INSERT INTO questions (type,title,language, answers, rights)
-	// 	VALUES (:type, :title,:language, :answers, :rights)`,
-	// 	map[string]interface{}{
-	// 		"type":     req.Type,
-	// 		"title":    resp.Title,
-	// 		"language": req.Language,
-	// 		"answers":  string(answersJSON),
-	// 		"rights":   string(rightsJSON),
-	// 	})
-	// // 构造响应
-	// if err != nil {
-	// 	sendError(ctx, http.StatusInternalServerError, err.Error())
-	// 	return
-	// }
-	// // 提交事务
-	// if err := tx.Commit(); err != nil {
-	// 	api.Error(ctx, http.StatusInternalServerError, "事务提交失败")
-	// 	return
-	// }
-
-
+	
 	ctx.JSON(http.StatusOK, gin.H{
 		"code":  0,
 		"msg":   "",
@@ -83,24 +53,23 @@ func (c *QuestionController) GenerateQuestion(ctx *gin.Context) {
 	})
 }
 
-func buildLog(req config.QuestionRequest, resp *config.QuestionResponse, err error, start time.Time) config.AILog {
-	logEntry := config.AILog{
-		AIStartTime: start.Format("2006-01-02 15:04:05"),
-		AIEndTime:   time.Now().Format("2006-01-02 15:04:05"),
-		AICostTime:  fmt.Sprintf("%.2fs", time.Since(start).Seconds()),
-		AIReq:       req,
-		Status:      "success",
-	}
+func buildLog(req config.QuestionRequest, resp *config.QuestionResponses, err error, start time.Time) config.AILog {
+    logEntry := config.AILog{
+        AIStartTime: start.Format("2006-01-02 15:04:05"),
+        AIEndTime:   time.Now().Format("2006-01-02 15:04:05"),
+        AICostTime:  fmt.Sprintf("%.2fs", time.Since(start).Seconds()),
+        AIReq:       req,
+        Status:      "success",
+    }
 
-	if err != nil {
-		logEntry.Status = "failed"
-		logEntry.Error = err.Error()
-	} else {
-		logEntry.AIRes = *resp
-	}
-	return logEntry
+    if err != nil {
+        logEntry.Status = "failed"
+        logEntry.Error = err.Error()
+    } else {
+        logEntry.AIRes = *resp 
+    }
+    return logEntry
 }
-
 func sendError(ctx *gin.Context, code int, msg string) {
 	ctx.JSON(code, gin.H{
 		"code": code,
