@@ -124,6 +124,8 @@ const QuestionCreateByHand = () => {
 
           <Form.Item label="内容" name="content">
             <Input.TextArea
+              minrows={4}
+              maxrows={8}
               rows={7}
               onChange={(e) => setContentLength(e.target.value.length)}
               style={{ flex: 1 }}

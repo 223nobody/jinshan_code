@@ -13,6 +13,7 @@ import QuestionCreateByHand from "./QuestionCreateByHand";
 import QuestionCreateByAI from "./QuestionCreateByAI";
 import QuestionEdit from "./QuestionEdit";
 import readmecontent from "../../readme.md";
+import image from "./images/image.png";
 
 const { Header, Sider, Content } = Layout;
 
@@ -125,7 +126,7 @@ const App = () => {
                 fontSize: 30,
               }}
             >
-              <img src="image.png" alt="Logo" />
+              <img src={image} alt="Logo" />
             </div>
             <div style={{ color: "white", fontSize: 20, marginRight: "auto" }}>
               武汉科技大学 付坤 大作业

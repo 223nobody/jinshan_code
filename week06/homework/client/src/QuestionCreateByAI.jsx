@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { message } from "antd";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
-
+import image_ai from "./images/image_ai.png";
 const { Title } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
@@ -181,7 +181,7 @@ const QuestionCreateByAI = () => {
           style={{ display: "flex", alignItems: "center", marginBottom: 24 }}
         >
           <img
-            src="/image_ai.png"
+            src={image_ai}
             alt="logo"
             style={{ width: 50, height: 50, marginRight: 12 }}
           />
