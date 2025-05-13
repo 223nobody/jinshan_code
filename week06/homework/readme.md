@@ -84,7 +84,7 @@ server/                      # 服务根目录
 ├── go.mod                   # Go模块依赖
 ├── go.sum                   # 依赖校验文件
 ├── main.go                  # 服务入口文件
-└── question_service.db      # SQLite数据库
+└── question_service.db      # SQLite数据库文件
 ```
 
 **快速启动**
