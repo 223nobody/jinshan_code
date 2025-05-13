@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 // 正确配置结构
 export default defineConfig({
+  assetsInclude: ["**/*.md", "**/*.png"], // 新增配置
   plugins: [react()],
   server: {
     // 开发服务器配置

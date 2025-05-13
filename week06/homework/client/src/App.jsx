@@ -12,6 +12,7 @@ import QuestionBank from "./QuestionBank";
 import QuestionCreateByHand from "./QuestionCreateByHand";
 import QuestionCreateByAI from "./QuestionCreateByAI";
 import QuestionEdit from "./QuestionEdit";
+import readmecontent from "../../readme.md";
 
 const { Header, Sider, Content } = Layout;
 
@@ -20,7 +21,7 @@ const StudyNotes = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/readme.md")
+    fetch(readmecontent)
       .then((response) => response.text())
       .then((text) => {
         setContent(text);
@@ -124,7 +125,7 @@ const App = () => {
                 fontSize: 30,
               }}
             >
-              <img src={"/image.png"} alt="Logo" />
+              <img src="image.png" alt="Logo" />
             </div>
             <div style={{ color: "white", fontSize: 20, marginRight: "auto" }}>
               武汉科技大学 付坤 大作业

@@ -181,7 +181,7 @@ const QuestionCreateByAI = () => {
           style={{ display: "flex", alignItems: "center", marginBottom: 24 }}
         >
           <img
-            src="/image ai.png"
+            src="/image_ai.png"
             alt="logo"
             style={{ width: 50, height: 50, marginRight: 12 }}
           />
